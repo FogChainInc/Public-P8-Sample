@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
+import { Link } from 'react-router-dom';
 
 import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
 import P8Logo from '../../resources/images/p8-logo.png';
 
 const NavBar = () => {
@@ -15,12 +15,12 @@ const NavBar = () => {
           height='50'
           className='d-inline-block align-top mx-2'
         />
-        <Navbar.Brand className='font-weight-bold' href='#'>
-          Prometheus 8
-        </Navbar.Brand>
-        <Nav.Link className='text-dark' href='#'>
+        <Link to='/'>
+          <Navbar.Brand className='font-weight-bold'>Prometheus 8</Navbar.Brand>
+        </Link>
+        <Link to='/' className='nav-link text-dark'>
           Home
-        </Nav.Link>
+        </Link>
       </Navbar>
     </Fragment>
   );
