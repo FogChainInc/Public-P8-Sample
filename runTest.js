@@ -10,9 +10,10 @@ const test_browser = arg[7];
 const test_browser_version = arg[8];
 const test_platform = arg[9];
 const test_grid = arg[10] || 'http://dev.p8hub.com:4444';
+const host = 'https://prometheus8.p8hub.com';
 
 const runTest = async () => {
-  const url = `https://prometheus8.p8hub.com:7300/v1/test_run/execute_test_run?key=${company_key}`;
+  const url = `${host}:7300/v1/test_run/execute_test_run?key=${company_key}`;
   const data = {
     test_run_id: test_run_id,
     os: test_os,
@@ -31,7 +32,7 @@ const runTest = async () => {
 };
 
 const determineVerdict = async () => {
-  const url = `https://prometheus8.p8hub.com:7300/v1/test_run/get_Report_Status?key=${company_key}`;
+  const url = `${host}:7300/v1/test_run/get_Report_Status?key=${company_key}`;
   const data = {
     params: {
       test_run_id: test_run_id,
@@ -52,7 +53,7 @@ const determineVerdict = async () => {
   }
 };
 
-// Start P8 Test Framework
+// Start Test
 runTest().then(() => {
   determineVerdict();
 });
