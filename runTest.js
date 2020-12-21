@@ -1,4 +1,6 @@
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
 const arg = process.argv;
 const company_key = arg[2];
@@ -43,11 +45,51 @@ const determineVerdict = async () => {
   try {
     const res = await axios.get(url, data);
     if (res.data.successful) {
-      console.log('Test Passed');
-      process.exit(0);
+      console.log('Test Passed!');
+      return;
     }
-    console.log('Test Failed');
-    process.exit(1);
+    console.log('Test Failed.');
+    process.exitCode = 1;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const downloadReport = async () => {
+  const timestamp = Date.now();
+  const url = `${host}:7300/v1/test_run/download_recent_report?key=${company_key}`;
+  const directory = path.resolve(__dirname, 'reports');
+  const file = path.resolve(directory, `${timestamp}.zip`);
+  const data = {
+    test_run_id: test_run_id,
+    project_id: test_project_id,
+    company_id: company_id
+  };
+  if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory);
+  }
+
+  try {
+    const res = await axios({
+      method: 'GET',
+      url: url,
+      data: data,
+      responseType: 'stream'
+    });
+    if (!res.status == 200) {
+      console.log('Invalid Company Key');
+    }
+    const writer = fs.createWriteStream(file);
+    res.data.pipe(writer);
+
+    writer.on('finish', () => {
+      writer.close();
+      console.log(`Report saved to=${file}`);
+    });
+    writer.on('error', () => {
+      writer.close(err);
+      console.log(err);
+    });
   } catch (err) {
     console.error(err);
   }
@@ -55,5 +97,7 @@ const determineVerdict = async () => {
 
 // Start Test
 runTest().then(() => {
-  determineVerdict();
+  downloadReport().then(() => {
+    determineVerdict();
+  });
 });
